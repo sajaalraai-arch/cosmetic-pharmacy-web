@@ -1,0 +1,105 @@
+<header>
+    <nav class="navbar flex between wrapper">
+        <a href="#" class="web-logo" (click)="$event.preventDefault()">beauty </a>
+        <ul class="nav-list flex gap-3">
+            <li><a routerLink="/" class="ju">home</a></li>
+            <li><a routerLink="/" fragment="about" class="ju">about us</a></li>
+            <li class="drop-down">
+                <a routerLink="/shop" class="ju dropbtn">categories</a>
+                <div class="drop-down-content">
+                    <a routerLink="/shop" [queryParams]="{ category: 'Skin Care' }">skin care</a>
+                    <a routerLink="/shop" [queryParams]="{ category: 'Body Care' }">body care</a>
+                    <a routerLink="/shop" [queryParams]="{ category: 'Hair Care' }">hair care</a>
+                </div>
+            </li>
+            <li><a routerLink="/" fragment="revew" class="ju">revew</a></li>
+            <li><a href="#" class="ju" (click)="$event.preventDefault()">contacts</a></li>
+        </ul>
+        <div class="website-action flex gap-2">
+            <a href="#" class="icon search-icon" (click)="$event.preventDefault()">
+                <i class="ri-search-line"></i>
+            </a>
+            <a href="#" class="icon" (click)="$event.preventDefault()">
+                <i class="ri-heart-line"></i>
+            </a>
+            <a routerLink="/cart" class="icon">
+                <div class="cart-continer">
+                    <i class="ri-shopping-cart-line"></i>
+                    <span class="cart-count">{{ cartCount$ | async }}</span>
+                </div>
+            </a>
+            <a hreflang="#" class="icon">
+                <i class="ri-customer-service-2-fill"></i>
+            </a>
+            <a routerLink="/login" id="login-btn" class="icon">
+                <i class="ri-user-3-line"></i>
+            </a>
+            <div class="setting-dropdown-continer">
+                <a href="#" class="icon" (click)="$event.preventDefault()">
+                    <i class="ri-settings-3-line"></i>
+                </a>
+                <div class="setting-dropdown-menu" appSettingsMenu>
+                    <div class="setting-menu-section currency-section">
+                        <span class="setting-section-title">currency</span>
+                        <div class="setting-cuurency-box">
+                            <a href="#" class="selected-curency" (click)="$event.preventDefault()">usd /$</a>
+                            <div class="seeting-curency-list">
+                                <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">chf /chf</a>
+                                <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">mxn /$mxn</a>
+                                <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">eur /</a>
+                                <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">gbp /</a>
+                                <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">cad /ca$</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-menu-section languge-section">
+                        <span class="setting-section-title  languge">languge</span>
+                        <div class="setting-languge-box">
+                            <a href="#" class="selected-languge" (click)="$event.preventDefault()">english</a>
+                            <div class="seeting-languge-list">
+                                <a href="#" class="setting-languge-option " (click)="$event.preventDefault()">arabic</a>
+                                <a href="#" class="setting-languge-option" (click)="$event.preventDefault()">espanol</a>
+                            </div>
+                            <span class="seting-more-div">
+                                <a href="#" class="setting-more" (click)="$event.preventDefault()">international site</a>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<section class="Best-selling-products">
+    <div class="carousel-container">
+        <div class="products-carousel">
+            <div class="product-card" style="position: relative;" *ngFor="let item of products">
+                <div class="badge" style="background-color: #e74c3c; z-index: 2;" *ngIf="item.stockQuantity <= 0">نفذت الكمية</div>
+                <div class="image-wrapper">
+                    <button class="wishlist-btn" style="float:right; padding:20px; right: 10px; z-index: 2; position: relative;" (click)="toggleWish(item.productId)"><i class="fa-heart" [ngClass]="wishlist.has(item.productId) ? 'fa-solid' : 'fa-regular'"></i></button>
+                    <img [src]="item.mainImageUrl | imgUrl" [alt]="item.productName">
+                </div>
+                <a [routerLink]="['/product', item.productId]" class="main-card-link"></a>
+                <p class="category">
+                    {{ item.categoryName }} | {{ item.brand }}
+                </p>
+                <h3>
+                    {{ item.productName }}
+                    <span class="rating"><i class="ri-star-fill"></i> 4.9</span>
+                </h3>
+                <div class="product-meta" style="font-size: 12px; color: #888; margin-bottom: 5px;">
+                    <span>size: {{ item.size }}</span>
+                </div>
+                <p class="price">
+                    ${{ (item.discountPrice > 0 && item.discountPrice < item.price ? item.discountPrice : item.price) | number:'1.2-2' }}
+                    <span class="old-price" *ngIf="item.discountPrice > 0 && item.discountPrice < item.price">${{ item.price | number:'1.2-2' }}</span>
+                </p>
+                <div style="display: flex; justify-content: center; width: 100%; z-index: 3; position: relative;">
+                    <button type="button" class="add-to-cart" (click)="addToCart(item.productId)" style="background-color: #697c70; color: #ffffff; padding: 10px; height: 3rem; width: 100%; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                        Add to Cart <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+                </div>
+            </div>
+    </div>
+    </div>
+</section>

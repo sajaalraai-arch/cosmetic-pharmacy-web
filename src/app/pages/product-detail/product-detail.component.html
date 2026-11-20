@@ -1,0 +1,254 @@
+<ng-container *ngIf="product">
+<div class="product-wrapper">
+        <div class="product-gallery">
+            <div class="thumbnail-column">
+                <img *ngFor="let img of product.productImages | slice:0:3" [src]="img.imageUrl | imgUrl" class="thumb-img" [class.active]="mainImage === img.imageUrl" (click)="mainImage = img.imageUrl">
+            </div>
+            <div class="main-image-display">
+                <img [src]="mainImage | imgUrl" [alt]="product.productName" id="main-img-product">
+            </div>
+        </div>
+        <div class="product-content">
+            <p class="brand-tag">{{ product.brand || 'Brand' }}</p>
+            <h1 class="product-name">{{ product.productName }}</h1>
+            <div class="rating-box">
+                <span class="stars-gold">★★★★★</span>
+                <span class="rating-score">4.5/5</span>
+                <a href="javascript:void(0)" class="rating-link" (click)="scrollToReviews()">(240 Reviews)</a>
+            </div>
+            <div class="pricing-container">
+                <span class="price-now">${{ (product.discountPrice > 0 && product.discountPrice < product.price ? product.discountPrice : product.price) | number:'1.2-2' }}</span>
+                <span class="price-was" *ngIf="product.discountPrice > 0 && product.discountPrice < product.price">${{ product.price | number:'1.2-2' }}</span>
+            </div>
+            <div class="description-container">
+                <p class="short-description">
+                    {{ product.productDescription }}
+                    <a href="javascript:void(0)" (click)="showDetails = true" id="moreBtn" class="toggle-link" [style.display]="showDetails ? 'none' : 'inline'">more</a>
+                </p>
+                <div id="extraDetails" class="details-table-wrapper" [style.display]="showDetails ? 'block' : 'none'">
+                    <table class="info-table">
+                        <thead>
+                            <tr><th colspan="2">Product Details</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Category:</td><td>{{ product.categoryName || 'N/A' }}</td></tr>
+                            <tr><td>Size:</td><td>{{ product.size }}</td></tr>
+                            <tr><td>Origin:</td><td>{{ product.countryOfOrigin }}</td></tr>
+                            <tr><td>Expiry Date:</td><td>{{ product.expiryDate | date:'MM/yyyy' }}</td></tr>
+                        </tbody>
+                    </table>
+                    <a href="javascript:void(0)" (click)="showDetails = false" class="toggle-link">less</a>
+                </div>
+            </div>
+            <div class="buying-actions">
+                <div class="qty-control">
+                    <button type="button" class="qty-btn" (click)="changeQty(-1)">-</button>
+                    <input type="text" class="qty-input" name="qty" [(ngModel)]="qty">
+                    <button type="button" class="qty-btn" (click)="changeQty(1)">+</button>
+                </div>
+                <div class="buying-actions">
+                    <div style="display: inline-flex; gap: 10px; align-items: center;">
+                        <button type="button" class="btn-add" (click)="addToCart()">Add To Cart</button>
+                    </div>
+                    <div style="display: inline;">
+                        <button type="button" class="btn-buy" (click)="buyNow()">Buy Now</button>
+                    </div>
+                    <button type="button" class="btn-heart" title="Add to Wishlist" (click)="toggleHeart($event)">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+            <hr class="divider">
+            <div class="feature-pills">
+                <div class="pill">📦 Free Shipping</div>
+                <div class="pill">🌿 Natural Ingredients</div>
+                <div class="pill">🛡️ Original Product</div>
+            </div>
+        </div>
+    </div>
+    <div class="tabs-container">
+        <div class="tabs-header">
+            <button class="tab-btn" [class.active]="activeTab === 'desc'" (click)="activeTab = 'desc'">Description</button>
+            <button class="tab-btn" [class.active]="activeTab === 'ing'" (click)="activeTab = 'ing'">Ingredients</button>
+            <button class="tab-btn" [class.active]="activeTab === 'use'" (click)="activeTab = 'use'">How to use</button>
+        </div>
+        <div id="desc" class="tab-content" [style.display]="activeTab === 'desc' ? 'block' : 'none'">
+            <h3>About this product</h3>
+            <p>{{ product.productDescription }}</p>
+        </div>
+        <div id="ing" class="tab-content" [style.display]="activeTab === 'ing' ? 'block' : 'none'">
+            <h3>Key Ingredients</h3>
+            <p>{{ product.ingredients }}</p>
+        </div>
+        <div id="use" class="tab-content" [style.display]="activeTab === 'use' ? 'block' : 'none'">
+            <h3>How to apply</h3>
+            <p>{{ product.usageInstructions }}</p>
+        </div>
+    </div>
+    <div id="reviews-section" class="reviews-wrapper">
+        <h2 class="section-title">Customer Reviews</h2>
+        <div class="rating-header-row">
+            <div class="rating-score-card">
+                <div class="average-score">4.5</div>
+                <div class="stars-gold-big">★★★★★</div>
+                <p class="total-reviews-count">Based on 240 reviews</p>
+            </div>
+            <div class="star-distribution">
+                <div class="star-row">
+                    <span class="star-label">5 Star</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 80%;"></div></div>
+                    <span class="star-percentage">80%</span>
+                </div>
+                <div class="star-row">
+                    <span class="star-label">4 Star</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 15%;"></div></div>
+                    <span class="star-percentage">15%</span>
+                </div>
+                <div class="star-row">
+                    <span class="star-label">3 Star</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 5%;"></div></div>
+                    <span class="star-percentage">5%</span>
+                </div>
+                <div class="star-row">
+                    <span class="star-label">2 Star</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 2%;"></div></div>
+                    <span class="star-percentage">2%</span>
+                </div>
+                <div class="star-row">
+                    <span class="star-label">1 Star</span>
+                    <div class="bar-bg"><div class="bar-fill" style="width: 1%;"></div></div>
+                    <span class="star-percentage">1%</span>
+                </div>
+            </div>
+        </div>
+        <div class="reviews-list-container">
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="user-info">
+                        <div class="user-icon">S</div>
+                        <span class="user-name">Sajaa A.</span>
+                    </div>
+                    <span class="review-date">March 1, 2026</span>
+                </div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"This serum is a lifesaver! My skin feels so hydrated and plump."</p>
+                <div class="review-footer">
+                    <button class="btn-helpful">👍 Helpful (19)</button>
+                </div>
+            </div>
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="user-info">
+                        <div class="user-icon">A</div>
+                        <span class="user-name">Amira N.</span>
+                    </div>
+                    <span class="review-date">Feb 25, 2026</span>
+                </div>
+                <div class="review-stars">★★★★☆</div>
+                <p class="review-text">"Great product, the quality is amazing. Fast absorption on the skin."</p>
+                <div class="review-images">
+                    <img [src]="product.mainImageUrl | imgUrl" [alt]="product.productName">
+                </div>
+                <div class="review-footer">
+                    <button class="btn-helpful">👍 Helpful (12)</button>
+                </div>
+            </div>
+            <div class="review-item">
+                <div class="review-header">
+                    <div class="user-info">
+                        <div class="user-icon">A</div>
+                        <span class="user-name">Aisha B.</span>
+                    </div>
+                    <span class="review-date">Feb 20, 2026</span>
+                </div>
+                <div class="review-stars">★★★★★</div>
+                <p class="review-text">"Absolutely love it! My skincare routine is complete."</p>
+                <div class="review-images">
+                        <img [src]="product.mainImageUrl | imgUrl" [alt]="product.productName">
+                    <img [src]="product.mainImageUrl | imgUrl" [alt]="product.productName">
+                </div>
+                <button class="btn-helpful">
+                    <span class="helpful-icon">👍</span> Helpful (8)
+                </button>
+            </div>
+        <div class="review-item" *ngFor="let c of comments">
+                <div class="review-header">
+                    <div class="user-info">
+                        <div class="user-icon">{{ (c.customerName || '?') | slice:0:1 | uppercase }}</div>
+                        <span class="user-name">{{ c.customerName }}</span>
+                    </div>
+                    <span class="review-date">{{ c.createdAt | date:'MMM d, y' }}</span>
+                </div>
+                <div class="review-stars" *ngIf="c.rating">{{ stars(c.rating) }}</div>
+                <p class="review-text">{{ c.content }}</p>
+                <div class="review-footer" *ngIf="canDelete(c)">
+                    <button type="button" class="btn-helpful" (click)="deleteComment(c)">Delete</button>
+                </div>
+            </div>
+            <div class="review-item">
+                <div class="review-stars" style="cursor: pointer;">
+                    <span *ngFor="let s of starValues" (click)="newRating = s">{{ s <= newRating ? '★' : '☆' }}</span>
+                </div>
+                <textarea name="newComment" maxlength="1000"  class="review-text" rows="2" placeholder="Write your comment..." style="width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 8px; font-family: inherit;" [(ngModel)]="newComment"></textarea>
+                <div class="review-footer">
+                    <button type="button" class="btn-helpful" (click)="addComment()" [disabled]="!newComment.trim() || !newRating">Add comment</button>
+                </div>
+            </div>
+        </div>
+        <div class="action-center">
+            <button class="btn-view-all"> All Reviews (240)</button>
+        </div>
+        <div class="related-products">
+            <p class="subtitle">Related Products</p>
+            <h2>Explore <span>Related Products</span></h2>
+            <div class="carousel-container">
+                <div class="products-carousel">
+                    <div class="product-card">
+                        <div class="badge">50% off</div>
+                        <div class="image-wrapper">
+                            <img src="assets/images/98fc87853b9a0aadde92cbb0aa2e3d79.jpg" alt="Serum">
+                            <button class="wishlist-btn" (click)="toggleHeart($event)"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <p class="category">Skin Care</p>
+                        <h3>SilkSculpt Serum <span class="rating"><i class="fa-solid fa-star"></i> 4.9</span></h3>
+                        <p class="price">$35.00 <span class="old-price">$70.00</span></p>
+                        <button class="add-to-cart">Add to Cart <i class="fa-solid fa-cart-shopping"></i></button>
+                    </div>
+                    <div class="product-card">
+                        <div class="badge">50% off</div>
+                        <div class="image-wrapper">
+                            <img src="assets/images/988c732d32852506bc1194e62291cfe2.jpg.jpeg" alt="Serum">
+                            <button class="wishlist-btn" (click)="toggleHeart($event)"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <p class="category">Skin Care</p>
+                        <h3>HydraLuxe Serum <span class="rating"><i class="fa-solid fa-star"></i> 4.9</span></h3>
+                        <p class="price">$20.00 <span class="old-price">$40.00</span></p>
+                        <button class="add-to-cart">Add to Cart <i class="fa-solid fa-cart-shopping"></i></button>
+                    </div>
+                    <div class="product-card">
+                        <div class="badge">50% off</div>
+                        <div class="image-wrapper">
+                            <img src="assets/images/defeb35b95fb64082673a58d73808fe6.jpg" alt="Serum">
+                            <button class="wishlist-btn" (click)="toggleHeart($event)"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <p class="category">Skin Care</p>
+                        <h3>HydraLuxe Serum <span class="rating"><i class="fa-solid fa-star"></i> 4.9</span></h3>
+                        <p class="price">$20.00 <span class="old-price">$40.00</span></p>
+                        <button class="add-to-cart">Add to Cart <i class="fa-solid fa-cart-shopping"></i></button>
+                    </div>
+                    <div class="product-card">
+                        <div class="badge">50% off</div>
+                        <div class="image-wrapper">
+                            <img src="assets/images/25f051d4ddba3092377e195fe7340bb1.jpg" alt="Serum">
+                            <button class="wishlist-btn" (click)="toggleHeart($event)"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                        <p class="category">Skin Care</p>
+                        <h3>HydraLuxe Serum <span class="rating"><i class="fa-solid fa-star"></i> 4.9</span></h3>
+                        <p class="price">$20.00 <span class="old-price">$40.00</span></p>
+                        <button class="add-to-cart">Add to Cart <i class="fa-solid fa-cart-shopping"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>

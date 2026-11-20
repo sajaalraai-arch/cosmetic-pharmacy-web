@@ -1,0 +1,63 @@
+<ng-container *ngIf="data">
+<div class="container-fluid">
+    <div  style="margin-right:500px">
+        <h5  class="fw-bold"></h5>
+        <h1 style="color: black;" >Welcome back, Admin!</h1>
+        <p class="text-muted">Here is what's happening with your pharmacy today.</p>
+    </div>
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 rounded-4">
+                <div class="text-muted small fw-bold mb-2">TOTAL INVENTORY VALUE</div>
+                <h3 class="fw-bold">{{ data.inventoryValue | currency:'USD' }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 rounded-4">
+                <div class="text-muted small fw-bold mb-2">TOTAL ORDERS</div>
+                <h3 class="fw-bold">{{ data.totalOrders }}</h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm p-4 rounded-4">
+                <div class="text-muted small fw-bold mb-2">SYSTEM USERS</div>
+                <h3 class="fw-bold">{{ data.totalUsers }}</h3>
+            </div>
+        </div>
+    </div>
+   <div class="card border-0 shadow-sm rounded-4 recent-card">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Recent Products</h5>
+                <a routerLink="/admin/products" class="btn text-white px-4 rounded-pill" style="background: var(--brand-brown);">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr class="text-muted">
+                            <th>Product Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of data.latestProducts">
+                            <td >{{ item.productName }}</td>
+                            <td>{{ item.price | number:'1.2-2' }} $</td>
+                            <td>{{ item.stockQuantity }}</td>
+                            <td>
+                                <span class="badge bg-success-subtle text-success" *ngIf="item.stockQuantity > 0">In Stock</span>
+                                <span class="badge bg-danger-subtle text-danger" *ngIf="item.stockQuantity <= 0">Out of Stock</span>
+                            </td>
+                        </tr>
+                        <tr *ngIf="data.latestProducts.length === 0">
+                            <td [attr.colspan]="4" class="text-center text-muted">No products found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</ng-container>

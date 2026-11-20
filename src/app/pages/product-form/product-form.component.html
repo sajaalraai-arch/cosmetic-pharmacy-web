@@ -1,0 +1,115 @@
+<div class="main-content">
+        <form (ngSubmit)="save()" id="productForm" ngNativeValidate>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-1">{{ isEdit ? 'Edit Product' : 'Add New Product' }}</h2>
+                <a *ngIf="categoryId" [routerLink]="['/admin/categories', categoryId, 'products']" class="btn btn-brown2 border rounded-pill px-4">{{ isEdit ? 'Discard Changes' : 'Discard' }}</a>
+                <a *ngIf="!categoryId" routerLink="/admin/products" class="btn btn-brown2 border rounded-pill px-4">{{ isEdit ? 'Discard Changes' : 'Discard' }}</a>
+            </div>
+            <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card p-4">
+                        <h5 class="card-title"><i class="fas fa-info-circle me-2"></i> General Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Product Name</label>
+                                <input type="text" name="productName" maxlength="30" [(ngModel)]="model.productName" class="form-control" id="prodName" (keyup)="generateSlug()" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Product Slug</label>
+                                <input type="text" name="productSlug" [(ngModel)]="model.productSlug" class="form-control bg-light" id="prodSlug" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Category</label>
+                                <select name="categoryId" [(ngModel)]="model.categoryId" class="form-select" required>
+                                    <option value="">Select Category</option>
+                                    <option *ngFor="let c of categories" [value]="c.categoryId">{{ c.categoryName }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Brand</label>
+                                <input name="brand" maxlength="100"  [(ngModel)]="model.brand" class="form-control" list="brandOptions" [placeholder]="isEdit ? 'Type to search...' : 'Type to search or add new brand...'" required>
+                                <datalist id="brandOptions">
+                                    <option *ngFor="let b of brands" [value]="b"></option>
+                                </datalist>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Barcode</label>
+                                <input type="text" name="barcode" maxlength="30"  [(ngModel)]="model.barcode" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Skin/Hair Type</label>
+                                <select name="targetType" [(ngModel)]="model.targetType" class="form-select" required>
+                                    <option value="">Select Target Type</option>
+                                    <option *ngFor="let t of targetTypes" [value]="t">{{ t }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-4">
+                        <h5 class="card-title"><i class="fas fa-align-left me-2"></i> Details &amp; Specs</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4"><label class="form-label">Size/Volume</label><input name="size" maxlength="20"  [(ngModel)]="model.size" class="form-control" required></div>
+                            <div class="col-md-4"><label class="form-label">Origin</label><input name="countryOfOrigin" maxlength="30"  [(ngModel)]="model.countryOfOrigin" class="form-control" required></div>
+                            <div class="col-md-4"><label class="form-label">Expiry Date</label><input type="date" name="expiryDate" [(ngModel)]="model.expiryDate" class="form-control" required></div>
+                            <div class="col-12"><label class="form-label">Description</label><textarea name="productDescription" maxlength="300"  [(ngModel)]="model.productDescription" class="form-control" rows="3" required></textarea></div>
+                            <div class="col-12"><label class="form-label">Ingredients</label><textarea name="ingredients" [(ngModel)]="model.ingredients" class="form-control" [attr.rows]="isEdit ? 3 : 2" required></textarea></div>
+                            <div class="col-12"><label class="form-label">Usage Instructions</label><textarea name="usageInstructions" [(ngModel)]="model.usageInstructions" class="form-control" rows="3" required></textarea></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card p-4">
+                        <h5 class="card-title"><i class="fas fa-tag me-2"></i> Pricing &amp; Stock</h5>
+                        <div class="mb-3"><label class="form-label">Price ($)</label><input name="price" [(ngModel)]="model.price" id="priceInput" [attr.min]="isEdit ? 1 : null" [attr.max]="isEdit ? 1000 : null" type="number" step="0.01" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Discount Price ($)</label><input name="discountPrice" [(ngModel)]="model.discountPrice" id="discountInput" [attr.min]="isEdit ? 0.99 : null" [attr.max]="isEdit ? 999 : null" type="number" step="0.01" class="form-control"></div>
+                        <div class="mb-0"><label class="form-label">Stock Quantity</label><input name="stockQuantity" [(ngModel)]="model.stockQuantity" id="stockInput" [attr.min]="isEdit ? 0 : null" [attr.max]="isEdit ? 250 : null" type="number" class="form-control" required></div>
+                    </div>
+                    <div class="card p-4">
+                        <h5 class="card-title"><i class="fas fa-images me-2"></i> Product Media</h5>
+                        <div class="mb-3">
+                            <input type="file" id="mainFile" #mainFile hidden accept="image/*" (change)="onFile('main', $event)">
+                            <div class="main-image-box" id="mainBox" (click)="mainFile.click()">
+                                <button type="button" class="remove-img" (click)="clearImage('main', $event)">×</button>
+                                <span id="mainText" [style.display]="previews['main'] ? 'none' : 'block'">Main Image</span>
+                                <img id="mainPreview" class="preview-img" [src]="previews['main'] | imgUrl" [style.display]="previews['main'] ? 'block' : 'none'">
+                            </div>
+                        </div>
+                        <div class="gallery-row">
+                            <div style="flex:1">
+                            <input type="file" id="g1" #g1 hidden accept="image/*" (change)="onFile('g1', $event)">
+                            <div class="gallery-box" (click)="g1.click()">
+                                <button type="button" class="remove-img" (click)="clearImage('g1', $event)">×</button>
+                                <img id="p1" class="preview-img" [src]="previews['g1'] | imgUrl" [style.display]="previews['g1'] ? 'block' : 'none'">
+                                <span id="t1" [style.display]="previews['g1'] ? 'none' : 'block'">+</span>
+                            </div>
+                        </div>
+                            <div style="flex:1">
+                            <input type="file" id="g2" #g2 hidden accept="image/*" (change)="onFile('g2', $event)">
+                            <div class="gallery-box" (click)="g2.click()">
+                                <button type="button" class="remove-img" (click)="clearImage('g2', $event)">×</button>
+                                <img id="p2" class="preview-img" [src]="previews['g2'] | imgUrl" [style.display]="previews['g2'] ? 'block' : 'none'">
+                                <span id="t2" [style.display]="previews['g2'] ? 'none' : 'block'">+</span>
+                            </div>
+                        </div>
+                            <div style="flex:1">
+                            <input type="file" id="g3" #g3 hidden accept="image/*" (change)="onFile('g3', $event)">
+                            <div class="gallery-box" (click)="g3.click()">
+                                <button type="button" class="remove-img" (click)="clearImage('g3', $event)">×</button>
+                                <img id="p3" class="preview-img" [src]="previews['g3'] | imgUrl" [style.display]="previews['g3'] ? 'block' : 'none'">
+                                <span id="t3" [style.display]="previews['g3'] ? 'none' : 'block'">+</span>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="form-check form-switch mt-4">
+                            <input class="form-check-input" type="checkbox" name="isActive" [(ngModel)]="model.isActive">
+                            <label class="form-check-label fw-bold">Active Product</label>
+                        </div>
+                        <button type="submit" class="btn btn-brown w-100 py-3 rounded-pill fw-bold shadow mt-3" [disabled]="saving">
+                            <i class="fas fa-save me-2"></i> {{ isEdit ? 'UPDATE PRODUCT' : 'SAVE PRODUCT' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>

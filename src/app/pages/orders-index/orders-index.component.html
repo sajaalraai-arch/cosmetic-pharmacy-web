@@ -1,0 +1,155 @@
+<div class="page-header">
+    <h1 class="page-title">Orders Management</h1>
+    <p class="page-subtitle">Manage and organize your orders</p>
+</div>
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+    <i class="fas fa-exclamation-circle me-2"></i> {{ errorMessage }}
+    <button type="button" class="btn-close" aria-label="Close" (click)="errorMessage = ''"></button>
+</div>
+
+<section class="stats-container">
+    <div class="stat-card stat-total">
+        <div class="stat-icon"><i class="fas fa-shopping-basket"></i></div>
+        <div class="stat-details">
+            <span class="stat-number">{{ stats.totalOrders }}</span>
+            <p>Total Orders</p>
+        </div>
+    </div>
+    <div class="stat-card stat-pending">
+        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+        <div class="stat-details">
+            <span class="stat-number">{{ stats.pendingOrders }}</span>
+            <p>Pending Orders</p>
+        </div>
+    </div>
+    <div class="stat-card stat-revenue">
+        <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+        <div class="stat-details">
+            <span class="stat-number">{{ stats.totalRevenue | currency:'USD' }}</span>
+            <p>Total Revenue</p>
+        </div>
+    </div>
+    <div class="stat-card stat-today">
+        <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+        <div class="stat-details">
+            <span class="stat-number">{{ stats.todayOrders }}</span>
+            <p>Today's Orders</p>
+        </div>
+    </div>
+</section>
+
+<section class="filter-card">
+    <form class="filter-row" (ngSubmit)="applyFilter()">
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" name="searchString" [(ngModel)]="filter.searchString" placeholder="Search by name or ID..." class="search-input">
+        </div>
+
+        <div class="filter-group">
+            <select name="sortOrder" [(ngModel)]="filter.sortOrder" class="form-select form-select-sm filter-select">
+                <option value="">Sort By (Default)</option>
+                <optgroup label="Date">
+                    <option value="date_desc">Newest First</option>
+                    <option value="date_asc">Oldest First</option>
+                </optgroup>
+                <optgroup label="Customer">
+                    <option value="name_asc">Name (A-Z)</option>
+                    <option value="name_desc">Name (Z-A)</option>
+                </optgroup>
+                <optgroup label="Order ID">
+                    <option value="id_asc">ID (Lowest)</option>
+                    <option value="id_desc">ID (Highest)</option>
+                </optgroup>
+                <optgroup label="Total Amount">
+                    <option value="price_desc">Highest Price</option>
+                    <option value="price_asc">Lowest Price</option>
+                </optgroup>
+            </select>
+
+            <select name="statusId" [(ngModel)]="filter.statusId" class="form-select form-select-sm filter-select">
+                <option value="">All Status</option>
+                <option value="1">Pending</option>
+                <option value="2">Processing</option>
+                <option value="3">Completed</option>
+                <option value="4">Cancelled</option>
+            </select>
+
+            <input type="date" name="fromDate" [(ngModel)]="filter.fromDate" class="form-control form-control-sm filter-date">
+          
+
+            <button type="submit" class="filter-btn">
+                <i class="fas fa-filter me-1"></i> Filter
+            </button>
+            <button type="button" class="reset-btn" (click)="resetFilter($event)">
+                <i class="fas fa-redo-alt"></i>
+            </button>
+        </div>
+    </form>
+</section>
+
+<div class="table-container">
+    <table class="orders-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Order Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let order of orders">
+                <tr>
+                    <td>#{{ order.orderId }}</td>
+                    <td>{{ order.customerName || 'Unknown Customer' }}</td>
+                    <td>{{ order.orderDate | date:'MMM dd, yyyy' }}</td>
+                    <td class="fw-semibold">{{ order.totalPrice | currency:'USD' }}</td>
+                    <td>
+                        <span class="status-text" [ngClass]="statusClass(order.orderStateId)">{{ order.orderStateId | orderStatus }}</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a [routerLink]="['/admin/orders', order.orderId]" class="icon-btn view-btn">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button type="button" class="icon-btn edit-btn" (click)="startEdit(order, $event)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="icon-btn delete-btn" (click)="deleteOrder(order)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="editOrderId === order.orderId">
+                    <td [attr.colspan]="6" class="edit-cell">
+                        <div class="edit-panel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="m-0 text-primary"><i class="fas fa-tools me-1"></i> Change Status for Order #{{ order.orderId }}</h6>
+                                <button type="button" class="btn-close btn-sm" (click)="cancelEdit($event)"></button>
+                            </div>
+                            <form class="row g-3 align-items-center" (ngSubmit)="updateStatus(order)">
+                                <div class="col-auto">
+                                    <span class="text-muted">Current status id:</span>
+                                    <span class="badge bg-secondary">{{ order.orderStateId }}</span>
+                                </div>
+                                <div class="col-auto">
+                                    <select name="newStatus" [(ngModel)]="newStatusId" class="form-select form-select-sm filter-select">
+                                        <option *ngFor="let state of states" [ngValue]="state.orderStateId">{{ state.nameState }}</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto">
+                                    <button type="submit" class="btn btn-success btn-sm px-3">Update</button>
+                                    <button type="button" class="btn btn-link btn-sm text-decoration-none text-muted" (click)="cancelEdit($event)">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+</div>

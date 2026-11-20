@@ -1,0 +1,289 @@
+<header>
+        <nav class="navbar flex between wrapper">
+            <a href="#" class="web-logo" (click)="$event.preventDefault()">beauty </a>
+            <ul class="nav-list flex gap-3">
+                <li><a routerLink="/" class="ju">home</a></li>
+                <li><a routerLink="/" fragment="about" class="ju">about us</a></li>
+                <li class="drop-down">
+                    <a routerLink="/shop" class="ju dropbtn">categories</a>
+                    <div class="drop-down-content">
+                        <a routerLink="/shop" [queryParams]="{ category: 'Skin Care' }">skin care</a>
+                        <a routerLink="/shop" [queryParams]="{ category: 'Body Care' }">body care</a>
+                        <a routerLink="/shop" [queryParams]="{ category: 'Hair Care' }">hair care</a>
+                    </div>
+                </li>
+                <li><a routerLink="/" fragment="revew" class="ju">revew</a></li>
+                <li><a href="#" class="ju" (click)="$event.preventDefault()">contacts</a></li>
+            </ul>
+            <div class="website-action flex gap-2">
+                <a href="#" class="icon search-icon" (click)="$event.preventDefault()">
+                    <i class="ri-search-line"></i>
+                </a>
+                <a href="#" class="icon" (click)="$event.preventDefault()">
+                    <i class="ri-heart-line"></i>
+                </a>
+                <a routerLink="/cart" class="icon">
+                    <div class="cart-continer">
+                        <i class="ri-shopping-cart-line"></i>
+                        <span class="cart-count">{{ cartCount$ | async }}</span>
+                    </div>
+                </a>
+                <a hreflang="#" class="icon">
+                    <i class="ri-customer-service-2-fill"></i>
+                </a>
+                <a routerLink="/login" id="login-btn" class="icon">
+                    <i class="ri-user-3-line"></i>
+                </a>
+                <div class="setting-dropdown-continer">
+                    <a href="#" class="icon" (click)="$event.preventDefault()">
+                        <i class="ri-settings-3-line"></i>
+                    </a>
+                    <div class="setting-dropdown-menu" appSettingsMenu>
+                        <div class="setting-menu-section currency-section">
+                            <span class="setting-section-title">currency</span>
+                            <div class="setting-cuurency-box">
+                                <a href="#" class="selected-curency" (click)="$event.preventDefault()">usd /$</a>
+                                <div class="seeting-curency-list">
+                                    <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">chf /chf</a>
+                                    <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">mxn /$mxn</a>
+                                    <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">eur /</a>
+                                    <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">gbp /</a>
+                                    <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">cad /ca$</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="setting-menu-section languge-section">
+                            <span class="setting-section-title  languge">languge</span>
+                            <div class="setting-languge-box">
+                                <a href="#" class="selected-languge" (click)="$event.preventDefault()">english</a>
+                                <div class="seeting-languge-list">
+                                    <a href="#" class="setting-languge-option " (click)="$event.preventDefault()">arabic</a>
+                                    <a href="#" class="setting-languge-option" (click)="$event.preventDefault()">espanol</a>
+                                </div>
+                                <span class="seting-more-div">
+                                    <a href="#" class="setting-more" (click)="$event.preventDefault()">international site</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <div class="ad-wrapper">
+            <div class="content-left" id="textGroup">
+                <div class="badge1">Sale for first purchase</div>
+                <h1 class="main-title" id="mainTitle" [class.fade-out]="fading" [innerHTML]="currentAd.title"></h1>
+                <p class="sub-text" id="mainDesc" [class.fade-out]="fading">{{ currentAd.desc }}</p>
+                <button class="order-btn" (click)="scrollToProducts()">Order now</button>
+            </div>
+            <div class="content-middle">
+                <img [src]="currentAd.mainImg" alt="Main Product" class="main-img" id="mainImg" [class.slide-out]="fading">
+            </div>
+            <div class="content-right">
+                <div class="next-preview-card" id="nextCard" [style.opacity]="fading ? 0.5 : 1">
+                    <img id="nextImg" [src]="previewImg" alt="Next Product">
+                    <h3 id="nextTitle">{{ previewTitle }}</h3>
+                    <p id="nextDesc">See for yourself that our products are the future.</p>
+                    <div class="footer-card">
+                        <span>Get yours</span>
+                        <button class="next-btn" (click)="rotateAds()">&rarr;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="related-products" id="topProducts">
+            <h2>Explore <span>Related Products</span></h2>
+            <div class="carousel-container">
+                <div class="products-carousel">
+                    <div class="product-card" *ngFor="let pro of topProducts">
+                        <div class="badge" *ngIf="pro.discountPrice > 0 && pro.discountPrice < pro.price">Sale</div>
+                        <div class="image-wrapper">
+                            <a [routerLink]="['/product', pro.productId]">
+                                <img [src]="pro.mainImageUrl | imgUrl" [alt]="pro.productName">
+                                <button class="wishlist-btn" (click)="toggleWish(pro.productId, $event)">
+                                    <i class="fa-heart" [ngClass]="wishlist.has(pro.productId) ? 'fa-solid active' : 'fa-regular'"></i>
+                                </button>
+                            </a>
+                        </div>
+                        <p class="category">{{ pro.targetType }}</p>
+                        <h3>
+                            {{ pro.productName }}
+                            <span class="rating"><i class="fa-solid fa-star"></i> 5.0</span>
+                        </h3>
+                        <p class="price">
+                            ${{ (pro.discountPrice > 0 && pro.discountPrice < pro.price ? pro.discountPrice : pro.price) | number:'1.2-2' }}
+                            <span class="old-price" *ngIf="pro.discountPrice > 0 && pro.discountPrice < pro.price">${{ pro.price | number:'1.2-2' }}</span>
+                        </p>
+                        <div style="display: inline-block; width: 100%;">
+                            <button type="button" class="add-to-cart" (click)="addToCart(pro.productId)">
+                                Add to Cart <i class="fa-solid fa-cart-shopping"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="catigorise-section" id="categories">
+            <div class="catigorise-header">
+                <h5 class="catigorise-sub-heading">word-class quality</h5>
+                <h1 class="catigorise-min-heading">we offer top notch</h1>
+                <p class="catigorise-description">
+                    your journry to comprehensive care begins here discover our wide range of skin care, body care and hair care that meet all your needs
+                </p>
+            </div>
+            <div class="catagorise-continer">
+                <div class="catagorise-card" *ngFor="let item of categories">
+                    <img [src]="item.categoryImage | imgUrl" alt="img-catagorise">
+                    <div class="catagorise-overlay">
+                        <h3>{{ item.categoryName }}</h3>
+                        <a routerLink="/shop" [queryParams]="{ category: item.categoryName }" class="bool-btn">view list</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="feature-relax-section">
+            <h2>why choose our beauty products </h2>
+            <div class="feature-serveice-continer">
+                <div class="feature-serve-item">
+                    <div>
+                        <i class="ri-truck-line featur-icon1"></i>
+                    </div>
+                    <div>
+                        <h3>fast delivery</h3>
+                    </div>
+                    <div class="feature-p">
+                        <p>the chairs have  aknitted backrest that conform</p>
+                    </div>
+                </div>
+                <div class="feature-serve-item">
+                    <div> <i class="ri-search-line featur-icon2"></i></div>
+                    <div> <h3>easy search</h3></div>
+                    <div class="feature-p"><p>our website is designed in a logical and organized way</p></div>
+                </div>
+                <div class="feature-serve-item">
+                    <div>  <i class="ri-hand-heart-line featur-icon3"></i></div>
+                    <div>  <h3>reliable products</h3></div>
+                    <div class="feature-p"> <p>our products are imported from trusted global medical </p></div>
+                </div>
+                <div class="feature-serve-item">
+                    <div><i class="ri-award-fill featur-icon3"></i></div>
+                    <div><h3>quaility excellence</h3></div>
+                    <div class="feature-p"> <p>our sits is designed to be aquite and comfortable </p></div>
+                </div>
+            </div>
+        </section>
+        <section class="section__container" id="revew">
+            <h2>Testimonials</h2>
+            <h1>What our customers say</h1>
+            <div class="scrolling__wrapper">
+                <button class="nav-btn next__btn" (click)="next()"><i class="ri-arrow-left-s-line"></i></button>
+                <button class="nav-btn prev__btn" (click)="prev()"><i class="ri-arrow-right-s-line"></i></button>
+                <div class="scrolling__container" id="scrollContainer" #scrollContainer (scroll)="updateActive()">
+                    <div class="section__card" *ngFor="let item of testimonials">
+                        <i class="ri-double-quotes-r quote-icon"></i>
+                        <p>"{{ item.text }}"</p>
+                        <img [src]="item.img" [alt]="item.alt" class="user-img" />
+                        <h5>{{ item.name }}</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination__dots" id="dotsContainer">
+                <div class="dot" *ngFor="let item of testimonials; let i = index" [class.active]="i === activeDot" (click)="goToDot(i)"></div>
+            </div>
+        </section>
+        <section class="about-section" id="about">
+            <div class="about-continer">
+                <div class="about-paragaph-content">
+                    <h3 class="about-title">about us</h3>
+                    <p class="about-paragaph">at pharmcy we belive true beauty is reflection of we are dedicated to provid wrated selection od effective beauty and wellness products community to nuture skin,body and hair with confidence.we are sustaiinability and transparenty ensure every product we meesc our high standdrds of qualty ethical sourcing  </p>
+                    <button class="about-button">more</button>
+                </div>
+            </div>
+        </section>
+        <section>
+            <div class="about-section-more-img">
+                <div class="about-section-more-img1">
+                    <img src="assets/images/defeb35b95fb64082673a58d73808fe6.jpg">
+                </div>
+                <div class="about-section-more-img1">
+                    <img src="assets/images/a4106274e1dd29e7d5f21f9f53fc380c.jpg">
+                </div>
+                <div class="about-section-more-img1">
+                    <img src="assets/images/75e0448d01c39954b97e522da295a4e3.jpg">
+                </div>
+                <div class="about-section-more-img1">
+                    <img src="assets/images/5c16eb439f95a147912e87c8f4a297d1.jpg">
+                </div>
+                <div class="about-section-more-img1">
+                    <img src="assets/images/0e783e31314620c9257274e840da9ec8.jpg">
+                </div>
+                <div class="about-section-more-img1">
+                    <img src="assets/images/f9323db1c6ec42366bf03b6c1af101a6.jpg">
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="footer-wrapper flex">
+            <div class="footer-column">
+                <a href="#" class="logo-footer" (click)="$event.preventDefault()">skin</a>
+                <p class="mt-one-half">
+                    we will fill your tummy delicious<br>
+                    food with fast delivery
+                </p>
+            </div>
+            <div class="footer-column">
+                <h4>our categories</h4>
+                <ul>
+                    <li><a href="#" class="footer-link" (click)="$event.preventDefault()">skin care</a></li>
+                    <li><a href="#" class="footer-link" (click)="$event.preventDefault()">body care</a></li>
+                    <li><a href="#" class="footer-link" (click)="$event.preventDefault()">hair care</a></li>
+                    <li><a href="#" class="footer-link" (click)="$event.preventDefault()">hair care</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>company info</h4>
+                <ul>
+                    <li><a href="#" class="footer-link" (click)="$event.preventDefault()">about us</a></li>
+                    <li>
+                        <a href="#" class="footer-link" (click)="$event.preventDefault()">langege</a>
+                    </li>
+                    <li><a href="#" class="footer-link" (click)="$event.preventDefault()">revew</a></li>
+                    <li><a href="#" class="footer-link" (click)="$event.preventDefault()">terms & condition</a></li>
+                </ul>
+            </div>
+            <div class="footer-column contact-column">
+                <h4>contact</h4>
+                <ul>
+                    <li>
+                        <i class="ri-map-pin-2-line icon-contact"><span class="footer-link">123 street ,New York, USA</span></i>
+                    </li>
+                    <li>
+                        <i class="ri-phone-line icon-contact"><span class="footer-link">+012 345 67890</span></i>
+                    </li>
+                    <li>
+                        <i class="ri-mail-line icon-contact"><span class="footer-link">123 street ,New York, USA</span></i>
+                    </li>
+                </ul>
+                <div class="footer-social-icons">
+                    <a href="#" class="footer-social-icon" (click)="$event.preventDefault()">
+                        <i class="ri-twitter-line"></i>
+                    </a>
+                    <a href="#" class="footer-social-icon" (click)="$event.preventDefault()">
+                        <i class="ri-instagram-line"></i>
+                    </a>
+                    <a href="#" class="footer-social-icon" (click)="$event.preventDefault()">
+                        <i class="ri-whatsapp-line"></i>
+                    </a>
+                    <a href="#" class="footer-social-icon" (click)="$event.preventDefault()">
+                        <i class="ri-facebook-fill"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <p>&copy;2026 skin care website.all right reserved</p>
+        </div>
+    </footer>

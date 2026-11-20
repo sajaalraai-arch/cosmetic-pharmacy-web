@@ -1,0 +1,57 @@
+<div class="container-fluid pt-4 px-5 mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-start">
+                <h2 class="fw-bold m-0 text-dark">{{ isEdit ? 'Edit Category' : 'Add New Category' }}</h2>
+            </div>
+            <div class="text-end">
+                <a routerLink="/admin/categories" class="btn btn-brown2 shadow-sm">Discard</a>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid flex-grow-1">
+        <div class="content-card">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <form (ngSubmit)="save()" ngNativeValidate>
+                        <div class="alert alert-danger py-2" *ngIf="errorMessage">{{ errorMessage }}</div>
+                        <div class="section-header mb-3">
+                            <i class="fas fa-info-circle me-2"></i> General Information
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold text-secondary">CATEGORY NAME</label>
+                            <input name="categoryName" [(ngModel)]="categoryName" maxlength="100"  class="form-control bg-light border-0 py-2 rounded-3 shadow-none" placeholder="Enter category name" required />
+                        </div>
+                        <div class="section-header mb-3">
+                            <i class="fas fa-image me-2"></i> Category Media
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary text-uppercase">Image URL (Optional)</label>
+                            <input name="imageUrl" id="imageUrl" [(ngModel)]="imageUrl" (input)="handleUrlInput()" class="form-control bg-light border-0 mb-3 rounded-3 shadow-none" placeholder="https://..." />
+                            <div class="image-preview-container rounded-4 d-flex flex-column align-items-center justify-content-center" (click)="fileInput.click()">
+                                <img id="imagePreview" [src]="previewSrc | imgUrl" class="img-fluid h-100 p-2" [style.display]="previewSrc ? 'block' : 'none'" style="object-fit: contain;" />
+                            <div id="placeholderText" class="text-center" [style.display]="previewSrc ? 'none' : 'block'">
+                                <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+                                <p class="m-0 fw-bold text-dark small">Main Image</p>
+                            </div>
+                        </div>
+                        <input type="file" name="imageFile" id="fileInput" #fileInput accept="image/*" class="d-none" (change)="handleFileInput($event)" />
+                        </div>
+                        <div class="bg-light rounded-4 p-3 d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <span class="fw-bold small d-block">Category Status (Active)</span>
+                                <small class="text-muted" style="font-size: 11px;">Visible in the store</small>
+                            </div>
+                            <div class="form-check form-switch m-0">
+                                <input class="form-check-input shadow-none" type="checkbox" name="isActive" [(ngModel)]="isActive" style="width: 2.8em; height: 1.4em; cursor: pointer;">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+                            <button type="submit" class="btn btn-brown w-100 py-3 rounded-pill fw-bold shadow mt-3" [disabled]="saving">
+                                <i class="fas fa-save me-2"></i> {{ isEdit ? 'UPDATE CATEGORY' : 'SAVE CATEGORY' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>

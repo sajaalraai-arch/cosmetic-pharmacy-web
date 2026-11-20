@@ -1,0 +1,58 @@
+<div class="checkout-wrapper-host" *ngIf="cart">
+<div class="checkout-wrapper">
+        <header class="checkout-header">
+            <h1 class="logo-text">Checkout</h1>
+            <p>Complete your journey to comprehensive care</p>
+        </header>
+        <div class="main-content">
+            <div class="form-container">
+                <form (ngSubmit)="placeOrder()" id="checkoutForm" ngNativeValidate>
+                    <section class="checkout-section">
+                        <h3>Customer Information</h3>
+                        <input type="text" name="fullName" maxlength="100"  placeholder="Full Name" required [(ngModel)]="form.fullName">
+                        <input type="text" name="phone" maxlength="50"  placeholder="Phone Number" required [(ngModel)]="form.phone">
+                    </section>
+                    <section class="checkout-section">
+                        <h3>Shipping Address</h3>
+                        <input type="text" name="city" maxlength="100"  placeholder="City" required [(ngModel)]="form.city">
+                        <input type="text" name="address" placeholder="Street Address" required [(ngModel)]="form.address">
+                    </section>
+                    <section class="checkout-section">
+                        <h3>Payment Method</h3>
+                        <div class="payment-selection-vertical">
+                            <label class="payment-option"><input type="radio" name="pay" value="card" [(ngModel)]="form.paymentMethod"> Credit Card</label>
+                            <label class="payment-option"><input type="radio" name="pay" value="cod" [(ngModel)]="form.paymentMethod"> Cash On Delivery</label>
+                        </div>
+                    </section>
+                    <div class="checkout-actions">
+                        <button type="submit" class="btn-purchase" [disabled]="submitting">Complete Purchase</button>
+                        <a routerLink="/cart" class="link-return">← Back to shopping bag</a>
+                    </div>
+                </form>
+            </div>
+            <aside class="summary-container">
+                <h3>My Products</h3>
+                <div class="order-items-list">
+                    <div class="cart-item" *ngFor="let item of cart.items">
+                        <div class="item-main">
+                            <img [src]="item.mainImageUrl | imgUrl" alt="">
+                            <div class="item-info">
+                                <p class="p-name">{{ item.productName }}</p>
+                                <p style="margin: 0; font-size: 0.85rem; color: #666;">Quantity: {{ item.quantity }}</p>
+                                <p class="p-price">${{ item.totalPrice | number:'1.2-2' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h3 style="margin-top:30px">Order Summary</h3>
+                <div class="pricing-table">
+                    <div class="price-line"><span>Subtotal</span><span>${{ cart.summary.subtotal | number:'1.2-2' }}</span></div>
+                    <div class="price-line"><span>Tax (5%)</span><span>${{ cart.summary.tax | number:'1.2-2' }}</span></div>
+                    <div class="price-line"><span>Shipping</span><span>${{ cart.summary.shipping | number:'1.2-2' }}</span></div>
+                    <div class="price-line" style="color:red;" *ngIf="cart.summary.discount > 0"><span>Discount</span><span>-${{ cart.summary.discount | number:'1.2-2' }}</span></div>
+                <div class="price-line total-line"><span>Total</span><span>${{ cart.summary.total | number:'1.2-2' }}</span></div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>

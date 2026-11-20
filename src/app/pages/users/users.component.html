@@ -1,0 +1,140 @@
+<div class="content-wrapper">
+    <div class="mb-4">
+       <h1 class="text-4xl font-bold text-gray-800 mb-2">User Management</h1>
+        <p class="text-gray-500">Manage and organize your users</p>
+    </div>
+    <div class="stats-grid">
+        <div class="stat-card" (click)="filterUsers('All')">
+            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <h3>{{ totalUsers }}</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+        <div class="stat-card" (click)="filterUsers('Active')">
+            <div class="stat-icon navy"><i class="fas fa-shield-alt"></i></div>
+            <div class="stat-info">
+                <h3>{{ activeUsers }}</h3>
+                <p>ActiveUsers</p>
+            </div>
+        </div>
+        <div class="stat-card" (click)="filterUsers('Banned')">
+            <div class="stat-icon light-blue"><i class="fas fa-user-minus"></i></div>
+            <div class="stat-info">
+                <h3>{{ bannedUsers }}</h3>
+                <p>Banned Users</p>
+            </div>
+        </div>
+        <div class="stat-card add-btn-card" (click)="showAddRow()" style="cursor: pointer;">
+            <div class="add-icon"><i class="fas fa-plus"></i></div>
+            <p>Add User</p>
+        </div>
+    </div>
+    <div class="filters-section">
+        <div class="filter-group">
+            <label>Search</label>
+            <input type="text" id="userSearchInput" name="searchTerm" placeholder=" search by name or email..." [(ngModel)]="searchTerm" (input)="load()">
+        </div>
+        <div class="filter-group">
+            <label>Role</label>
+            <select id="roleFilter" name="roleFilter" [(ngModel)]="roleFilter" (change)="load()">
+                <option value="All">All</option>
+                <option value="Admin">Admin</option>
+                <option value="Customer">Customer</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Status</label>
+            <select id="statusFilter" name="statusFilter" [(ngModel)]="statusFilter" (change)="load()">
+                <option value="All">All</option>
+                <option value="Active">Active</option>
+                <option value="Banned">Banned</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="table-container">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>CreatedAt</th>
+                <th>Last Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="usersTableBody">
+            <tr class="user-row" *ngFor="let item of customers" [attr.data-name]="item.fullName.toLowerCase()" [attr.data-role]="item.userRole" [attr.data-status]="item.userStatus">
+                <td>
+                    <span *ngIf="editingId !== item.customerId">{{ item.fullName }}</span>
+                    <input *ngIf="editingId === item.customerId" type="text" name="editName" maxlength="100"  class="modern-input" [(ngModel)]="edit.fullName" />
+                </td>
+                <td>
+                    <span *ngIf="editingId !== item.customerId">{{ item.email }}</span>
+                    <input *ngIf="editingId === item.customerId" type="email" name="editEmail" maxlength="100"  class="modern-input" [(ngModel)]="edit.email" />
+                </td>
+                <td>
+                    <span *ngIf="editingId !== item.customerId" class="role-tag" [ngClass]="item.userRole?.toLowerCase()">{{ item.userRole }}</span>
+                    <select *ngIf="editingId === item.customerId" name="editRole" class="modern-select" [(ngModel)]="edit.userRole">
+                        <option value="Admin">Admin</option>
+                        <option value="Customer">Customer</option>
+                    </select>
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span *ngIf="editingId !== item.customerId" class="dot" [ngClass]="item.userStatus?.toLowerCase()"></span>
+                        <span *ngIf="editingId !== item.customerId">{{ item.userStatus }}</span>
+                        <select *ngIf="editingId === item.customerId" name="editStatus" class="editable-select" [(ngModel)]="edit.userStatus">
+                            <option value="Active">Active</option>
+                            <option value="Banned">Banned</option>
+                        </select>
+                    </div>
+                </td>
+                <td>{{ item.createdAt | date:'dd MMM yyyy' }}</td>
+                <td>{{ item.lastLogin | date:'dd MMM yyyy' }}</td>
+                <td class="actions-cell">
+                    <div *ngIf="editingId !== item.customerId">
+                         <a [routerLink]="['/admin/orders']" [queryParams]="{ customerId: item.customerId }" class="icon-btn view" style="color:#17a2b8">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <button class="icon-btn edit" style="color:#697c70" (click)="enableEdit(item)"><i class="fas fa-edit"></i></button>
+                        <button class="icon-btn delete" style="color:red" (click)="confirmDelete(item)"><i class="fas fa-trash"></i></button>
+                       
+                    </div>
+                    <div *ngIf="editingId === item.customerId">
+                        <button class="btn btn-success btn-sm" (click)="saveChanges(item)">save</button>
+                        <button class="btn btn-secondary btn-sm" (click)="disableEdit()">cancel</button>
+                    </div>
+                </td>
+            </tr>
+            <tr id="newUserRow" *ngIf="showAdd">
+                <td><input type="text" name="addName" maxlength="100"  class="form-control" placeholder="Name" [(ngModel)]="add.fullName"></td>
+                <td><input type="email" name="addEmail" maxlength="100"  class="form-control" placeholder="Email" [(ngModel)]="add.email"></td>
+                <td>
+                    <select name="addRole" class="form-control" [(ngModel)]="add.userRole">
+                        <option>Admin</option>
+                        <option>Customer</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="addStatus" class="form-control" [(ngModel)]="add.userStatus">
+                        <option>Active</option>
+                        <option>Banned</option>
+                    </select>
+                </td>
+                <td [attr.colspan]="2" class="text-muted text-center" style="font-size: 11px;">
+                    Auto-generated on save
+                </td>
+                <td>
+                    <div class="d-flex gap-1">
+                        <button class="btn btn-success btn-sm" (click)="saveUser()">Save</button>
+                        <button class="btn btn-secondary btn-sm" (click)="cancelAdd()">Cancel</button>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

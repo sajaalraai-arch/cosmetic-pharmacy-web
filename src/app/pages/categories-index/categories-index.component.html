@@ -1,0 +1,49 @@
+<div class="categories-container">
+    <div class="categories-header">
+        <div >
+            <h1>Categories Management</h1>
+            <p>Manage and organize your product categories perfectly.</p>
+        </div>
+    </div>
+    <div class="alert alert-danger mx-2" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="add-btn-wrapper mb-4">
+        <a routerLink="/admin/categories/create" class="btn-brown">
+            <i class="fas fa-plus"></i> Add New Category
+        </a>
+    </div>
+    <div class="categories-grid">
+        <div class="empty-state-box" *ngIf="categories.length === 0">
+            <i class="fas fa-folder-open text-muted mb-3" style="font-size: 3rem; color: #cbd5e1;"></i>
+            <p>No Categories Found. Click "Add New Category" to start.</p>
+        </div>
+        <div class="category-card" [class.inactive]="!item.isActive" *ngFor="let item of categories; let i = index">
+            <div>
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="category-icon-wrap" [ngClass]="'bg-' + themeOf(i)">
+                        <img [src]="item.categoryImage | imgUrl" alt="icon" class="category-icon-img" appImgFallback />
+                        <i class="fas fa-tags text-white" style="display:none;"></i>
+                    </div>
+                    <div class="card-info-right">
+                        <p class="category-title-text" [ngClass]="themeOf(i)">{{ item.categoryName }}</p>
+                        <h3 class="products-count-num">{{ item.productsCount }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer-actions">
+                <a [routerLink]="['/admin/categories', item.categoryId, 'products']" class="view-products-link" [ngClass]="themeOf(i)">
+                    <i class="fas fa-eye"></i> View Products
+                </a>
+                <div class="action-buttons-group">
+                    <a [routerLink]="['/admin/categories/edit', item.categoryId]" class="btn-action-edit" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form style="display:inline;" (ngSubmit)="delete(item)">
+                        <button type="submit" class="btn-action-delete" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

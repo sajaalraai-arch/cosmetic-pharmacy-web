@@ -1,0 +1,71 @@
+<ng-container *ngIf="order">
+    <div class="page-header">
+        <h1 class="page-title">Order Details #{{ order.orderId }}</h1>
+        <a routerLink="/admin/orders" class="btn btn-brown-outline px-5">Back to Orders</a>
+    </div>
+
+    <div class="cards-row">
+        <div class="info-card">
+            <h5 class="card-title"><i class="fas fa-user me-2"></i> Customer Information</h5>
+            <p><span class="info-label">Name:</span> <span class="info-value">{{ order.customerName || 'Unknown Customer' }}</span></p>
+            <p><span class="info-label">Email:</span> <span class="info-value text-lowercase text-muted">{{ order.customerEmail || 'N/A' }}</span></p>
+            <p><span class="info-label">Phone:</span> <span class="info-value">{{ order.contactPhone }}</span></p>
+            <p><span class="info-label">Address:</span> <span class="info-value text-muted">{{ order.shippingAddress }}, {{ order.city }}</span></p>
+        </div>
+
+        <div class="info-card">
+            <h5 class="card-title"><i class="fas fa-file-invoice-dollar me-2"></i> Order Summary</h5>
+            <div class="summary-grid">
+                <div class="summary-col">
+                    <p><span class="info-label">Order ID:</span> <span class="info-value">#{{ order.orderId }}</span></p>
+                    <p><span class="info-label">Order Date:</span> <span class="info-value">{{ order.orderDate | date:'MM/dd/yyyy' }}</span></p>
+                    <p class="status-line">
+                        <span class="info-label">Status:</span>
+                        <span class="badge" [ngClass]="badgeClass(order.orderStateId)">{{ order.orderStateId | orderStatus }}</span>
+                    </p>
+                </div>
+                <div class="summary-col summary-right">
+                    <p><span class="info-label">Payment:</span> <span class="info-value">{{ order.paymentMethod || 'Credit Card' }}</span></p>
+                    <p><span class="info-label">Total:</span> <span class="total-price">{{ order.totalPrice | currency:'USD' }}</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-card items-card">
+        <h5 class="card-title"><i class="fas fa-box-open me-2"></i> Ordered Items</h5>
+        <div class="table-scroll">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Category ID</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of order.items">
+                        <td>
+                            <div class="product-cell">
+                                <img *ngIf="item.mainImageUrl; else noImage" [src]="item.mainImageUrl | imgUrl" class="item-img" />
+                                <ng-template #noImage>
+                                    <div class="item-img item-img-empty"><i class="fas fa-image"></i></div>
+                                </ng-template>
+                                <span class="product-name">{{ item.productName || 'Unknown Product' }}</span>
+                            </div>
+                        </td>
+                        <td><span class="id-badge">ID: {{ item.categoryId ?? 'General' }}</span></td>
+                        <td class="fw-semibold">{{ item.quantity }}</td>
+                        <td>{{ item.unitPrice | currency:'USD' }}</td>
+                        <td class="fw-semibold">{{ item.totalPrice | currency:'USD' }}</td>
+                    </tr>
+                    <tr *ngIf="order.items.length === 0">
+                        <td [attr.colspan]="5" class="empty-row">No items found for this order.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</ng-container>

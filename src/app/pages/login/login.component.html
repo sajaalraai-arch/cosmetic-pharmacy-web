@@ -1,0 +1,116 @@
+<main>
+        <header>
+            <nav class="navbar flex between wrapper">
+                <a href="#" class="web-logo" (click)="$event.preventDefault()">beauty </a>
+                <ul class="nav-list flex gap-3">
+                    <li><a routerLink="/" class="ju">home</a></li>
+                    <li><a href="#" class="ju" (click)="$event.preventDefault()">about us</a></li>
+                    <li class="drop-down">
+                        <a href="#" class="ju dropbtn" (click)="$event.preventDefault()">categories</a>
+                        <div class="drop-down-content">
+                            <a routerLink="/shop" [queryParams]="{ category: 'Skin Care' }">skin care</a>
+                            <a routerLink="/shop" [queryParams]="{ category: 'Body Care' }">body care</a>
+                            <a routerLink="/shop" [queryParams]="{ category: 'Hair Care' }">hair care</a>
+                        </div>
+                    </li>
+                    <li><a href="#" class="ju" (click)="$event.preventDefault()">revew</a></li>
+                    <li><a href="#" class="ju" (click)="$event.preventDefault()">contacts</a></li>
+                </ul>
+                <div class="website-action flex gap-2">
+                    <a href="#" class="icon search-icon" (click)="$event.preventDefault()"><i class="ri-search-line"></i></a>
+                    <a href="#" class="icon" (click)="$event.preventDefault()"><i class="ri-heart-line"></i></a>
+                    <a routerLink="/cart" class="icon">
+                        <div class="cart-continer">
+                            <i class="ri-shopping-cart-line"></i>
+                            <span class="cart-count">{{ cartCount$ | async }}</span>
+                        </div>
+                    </a>
+                    <a href="#" class="icon" (click)="$event.preventDefault()"><i class="ri-customer-service-2-fill"></i></a>
+                    <ng-container *ngIf="user$ | async as user; else guestIcon">
+                        <span style="font-size: 14px; font-weight: bold; color: #fff;">{{ user.fullName }}</span>
+                        <a href="#" class="icon" title="Logout" (click)="logout($event)"><i class="ri-logout-box-r-line"></i></a>
+                    </ng-container>
+                    <ng-template #guestIcon>
+                        <a href="#" class="icon" (click)="$event.preventDefault()"><i class="ri-user-3-line"></i></a>
+                    </ng-template>
+                    <div class="setting-dropdown-continer">
+                        <a href="#" class="icon" (click)="$event.preventDefault()"><i class="ri-settings-3-line"></i></a>
+                        <div class="setting-dropdown-menu" appSettingsMenu>
+                            <div class="setting-menu-section currency-section">
+                                <span class="setting-section-title">currency</span>
+                                <div class="setting-cuurency-box">
+                                    <a href="#" class="selected-curency" (click)="$event.preventDefault()">usd /$</a>
+                                    <div class="seeting-curency-list">
+                                        <a href="#" class="setting-currency-option" (click)="$event.preventDefault()">chf /chf</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="cointiner" [class.active]="signUpMode">
+            <div *ngIf="errorMessage" style="color: #ff4d4d; background: #ffe6e6; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-size: 14px; border: 1px solid #ffcccc; position: absolute; top: 10px; width: 80%; left: 10%; z-index: 100;">
+                <i class="fa-solid fa-circle-exclamation"></i> {{ errorMessage }}
+            </div>
+            <div *ngIf="successMessage" style="color: #28a745; background: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-size: 14px; border: 1px solid #c3e6cb; position: absolute; top: 10px; width: 80%; left: 10%; z-index: 100;">
+                <i class="fa-solid fa-circle-check"></i> {{ successMessage }}
+            </div>
+            <div class="form-box login">
+                <form (ngSubmit)="login()" ngNativeValidate>
+                    <h1>log in</h1>
+                    <div class="input-box">
+                        <select name="email" required [(ngModel)]="loginEmail" style="width: 100%; height: 100%; background:#fff; border: none; outline: none; font-size: 16px; color: inherit; font-weight: 500; padding: 0 45px; cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none;">
+                            <option value="" disabled selected hidden>Select Registered Email</option>
+                            <option *ngFor="let email of emails" [value]="email" style="color: #000; background-color: #fff;">{{ email }}</option>
+                        </select>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="input-box">
+                        <input type="password" name="password" placeholder="password" required [(ngModel)]="loginPassword">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div class="forget-link">
+                        <a href="#" (click)="$event.preventDefault()">forgot password?</a>
+                    </div>
+                    <button type="submit" class="btn">log in</button>
+                    <p>or log in with social platforms</p>
+                    <div class="social-icons">
+                        <a href="#" (click)="$event.preventDefault()"><i class="fa-brands fa-google"></i></a>
+                        <a href="#" (click)="$event.preventDefault()"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" (click)="$event.preventDefault()"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" (click)="$event.preventDefault()"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </form>
+            </div>
+            <div class="form-box sgin-up">
+                <form (ngSubmit)="register()" ngNativeValidate autocomplete="off">
+                    <h1>sign up</h1>
+                    <div class="input-box">
+                        <input name="fullName" type="text" placeholder="Full Name" maxlength="100"  required [(ngModel)]="registerName">
+                    </div>
+                    <div class="input-box">
+                        <input name="registerEmail" maxlength="100"  type="email" placeholder="Email" required autocomplete="new-email" [(ngModel)]="registerEmail">
+                    </div>
+                    <span *ngIf="registerError" style="color:#ff4d4d;font-size:12px;display:block;margin-bottom:15px;text-align:left">{{ registerError }}</span>
+                    <div class="input-box">
+                        <input name="registerPassword" type="password" placeholder="Password" required minlength="4" autocomplete="new-password" [(ngModel)]="registerPassword">
+                    </div>
+                    <button type="submit" class="btn">Sign Up</button>
+                </form>
+            </div>
+            <div class="toggle-box">
+                <div class="toggle-panel toggle-left">
+                    <h1>hello, welcome!</h1>
+                    <p>dont have an account?</p>
+                    <button type="button" class="btn sginup-btn" (click)="signUpMode = true">Sign up</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>welcome back!</h1>
+                    <p>already have an account?</p>
+                    <button type="button" class="btn login-btn" (click)="signUpMode = false">log in</button>
+                </div>
+            </div>
+        </div>
+</main>

@@ -1,0 +1,88 @@
+<div class="container py-4">
+    <ng-container *ngIf="product; else notFound">
+        <div class="mb-4">
+            <h2 class="fw-bold m-0 text-dark">Product Details</h2>
+        </div>
+        <div class="product-main-card">
+            <div class="row g-0">
+                <div class="col-lg-5 image-viewer-section">
+                    <div class="main-image-box">
+                        <img id="mainProductImage" [src]="currentImage | imgUrl" class="main-product-img" alt="Main Image" [style.opacity]="fading ? '0.3' : '1'">
+                    </div>
+                    <div class="thumbnail-gallery">
+                        <img [src]="product.mainImageUrl | imgUrl" class="thumb-img" [class.active]="activeThumb === product.mainImageUrl" (click)="changeImage(product.mainImageUrl)" alt="Thumb">
+                        <img *ngFor="let img of product.productImages" [src]="img.imageUrl | imgUrl" class="thumb-img" [class.active]="activeThumb === img.imageUrl" (click)="changeImage(img.imageUrl)" alt="Thumb">
+                    </div>
+                </div>
+                <div class="col-lg-7 details-viewer-section">
+                    <div class="mb-2 d-flex flex-wrap gap-2">
+                        <span class="badge-custom text-white" style="background-color: var(--category-accent);">{{ product.categoryName || 'General' }}</span>
+                        <span class="badge-custom bg-secondary text-white">{{ product.targetType }}</span>
+                    </div>
+                    <h1 class="product-title">{{ product.productName }}</h1>
+                    <div>
+                        <span class="slug-badge">slug: {{ product.productSlug || 'n/a' }}</span>
+                    </div>
+                    <p class="brand-text">Brand: <span class="fw-bold" style="color: var(--primary-brown);">{{ product.brand || 'Generic' }}</span></p>
+                    <div class="info-strip-grid">
+                        <div class="strip-box">
+                            <div class="strip-label">ID</div>
+                            <div class="strip-value">#{{ product.productId }}</div>
+                        </div>
+                        <div class="strip-box">
+                            <div class="strip-label">Barcode</div>
+                            <div class="strip-value text-secondary">{{ product.barcode || '—' }}</div>
+                        </div>
+                        <div class="strip-box">
+                            <div class="strip-label">Price</div>
+                            <div class="strip-value text-success">${{ product.price | number:'1.2-2' }}</div>
+                        </div>
+                        <div class="strip-box">
+                            <div class="strip-label">Stock</div>
+                            <div class="strip-value">{{ product.stockQuantity }}</div>
+                        </div>
+                        <div class="strip-box">
+                            <div class="strip-label">Status</div>
+                            <div class="strip-value" [ngClass]="product.isActive ? 'text-success' : 'text-danger'">
+                                {{ product.isActive ? 'Active' : 'Inactive' }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-block">
+                        <h5 class="section-title">Description</h5>
+                        <p class="content-p">{{ product.productDescription || 'No description provided.' }}</p>
+                    </div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 content-block">
+                            <h5 class="section-title">Ingredients</h5>
+                            <p class="content-p small">{{ product.ingredients || 'Information not available.' }}</p>
+                        </div>
+                        <div class="col-md-6 content-block">
+                            <h5 class="section-title">Usage Instructions</h5>
+                            <p class="content-p small">{{ product.usageInstructions || 'Follow label instructions.' }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-4 border-top d-flex gap-3">
+                        <ng-container *ngIf="categoryId; else noCategory">
+                            <a [routerLink]="['/admin/products/edit', product.productId]" [queryParams]="{ categoryId: categoryId }" class="btn btn-brown-main px-5 shadow-sm">Edit Product</a>
+                            <a [routerLink]="['/admin/categories', categoryId, 'products']" class="btn btn-brown-outline px-5">Back to Categories</a>
+                        </ng-container>
+                        <ng-template #noCategory>
+                            <a [routerLink]="['/admin/products/edit', product.productId]" class="btn btn-brown-main px-5 shadow-sm">Edit Product</a>
+                            <a routerLink="/admin/products" class="btn btn-brown-outline px-5">Back to Products</a>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+    <ng-template #notFound>
+        <div class="alert alert-danger shadow-sm rounded-3 mt-5" *ngIf="loaded">
+            <h4 class="alert-heading">Product Not Found!</h4>
+            <p>The product you are looking for might have been removed or the ID is incorrect.</p>
+            <hr>
+            <a *ngIf="categoryId" [routerLink]="['/admin/categories', categoryId, 'products']" class="btn btn-outline-danger">Return to Inventory</a>
+            <a *ngIf="!categoryId" routerLink="/admin/products" class="btn btn-outline-danger">Return to Inventory</a>
+        </div>
+    </ng-template>
+</div>

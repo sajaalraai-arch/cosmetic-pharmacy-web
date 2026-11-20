@@ -1,0 +1,58 @@
+:host {
+    display: block;
+    height: calc(100vh - 36px);
+    box-sizing: border-box;
+    padding: 30px 18px;
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+}
+
+.container-fluid {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-fluid > *:not(.recent-card) {
+    flex-shrink: 0;
+}
+
+.recent-card {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.recent-card .card-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.recent-card .table-responsive {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.recent-card thead th {
+    position: sticky;
+    top: 0;
+    background: #fff;
+}
+
+.recent-card .table-responsive::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.recent-card .table-responsive::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.recent-card .table-responsive::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 16px;
+}

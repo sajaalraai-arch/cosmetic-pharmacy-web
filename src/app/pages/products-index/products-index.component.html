@@ -1,0 +1,107 @@
+<div class="main-content">
+        <div class="mb-4">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Product Management</h1>
+            <p class="text-gray-500">Manage and organize your products</p>
+        </div>
+        <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="row g-4 mb-4">
+            <div class="col-md-3" (click)="setFilter('')">
+                <div class="stat-card p-4">
+                    <div class="text-muted small fw-bold">TOTAL PRODUCTS</div>
+                    <div class="h3 fw-bold mb-0">{{ stats.totalProducts }}</div>
+                </div>
+            </div>
+            <div class="col-md-3" (click)="setFilter('lowstock')">
+                <div class="stat-card p-4 border-gold-custom border-start border-4">
+                    <div class="text-muted small fw-bold">LOW STOCK (QTY &lt; 30)</div>
+                    <div class="h3 fw-bold mb-0 text-gold-custom">{{ stats.lowStock }}</div>
+                </div>
+            </div>
+            <div class="col-md-3" (click)="setFilter('expiring')">
+                <div class="stat-card p-4 border-start border-danger border-4">
+                    <div class="text-muted small fw-bold">EXPIRING SOON</div>
+                    <div class="h3 fw-bold mb-0 text-danger">{{ stats.expiringSoon }}</div>
+                </div>
+            </div>
+            <div class="col-md-3" (click)="setFilter('active')">
+                <div class="stat-card p-4 border-start border-green-custom border-4">
+                    <div class="text-muted small fw-bold">ACTIVE ITEMS</div>
+                    <div class="h3 fw-bold mb-0 text-green-custom">{{ stats.activeItems }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="search-action-bar">
+            <div class="search-container-fixed">
+                <form id="searchForm" (ngSubmit)="load()" class="bg-white p-2 rounded-4 shadow-sm border">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" id="searchInput" name="search" [(ngModel)]="search" class="form-control border-0 bg-transparent shadow-none" placeholder="Search by Product Name, Barcode, or Brand..." (input)="handleSearchInput()">
+                        <span id="clearSearchBtn" [style.display]="search ? 'flex' : 'none'" (click)="clearSearch()">×</span>
+                    </div>
+                </form>
+            </div>
+            <a routerLink="/admin/products/create" class="btn btn-brown rounded-pill px-4 fw-bold shadow-sm"><i class="fas fa-plus me-2"></i> Add New Product</a>
+        </div>
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="text-secondary">
+                        <tr>
+                            <th class="ps-4">PRODUCT &amp; BRAND</th>
+                            <th>CATEGORY</th>
+                            <th>PRICE</th>
+                            <th>STOCK</th>
+                            <th>EXPIRY</th>
+                            <th>STATUS</th>
+                            <th class="text-center">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngIf="products.length === 0"><td [attr.colspan]="7" class="text-center p-5 text-muted">No products found for this criteria.</td></tr>
+                        <tr *ngFor="let item of products">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <img [src]="item.mainImageUrl | imgUrl" class="product-img me-3">
+                                    <div>
+                                        <div class="fw-bold text-dark fs-6">{{ item.productName || 'N/A' }}</div>
+                                        <small class="text-muted">Brand: {{ item.brand || 'None' }} | Target: {{ item.targetType }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="category-badge">{{ item.categoryName || 'Uncategorized' }}</span>
+                            </td>
+                            <td>
+                                <ng-container *ngIf="item.discountPrice != null && item.discountPrice > 0; else normalPrice">
+                                    <div class="fw-bold text-success">${{ item.discountPrice }}</div>
+                                    <small class="text-muted text-decoration-line-through">${{ item.price }}</small>
+                                </ng-container>
+                                <ng-template #normalPrice>
+                                    <div class="fw-bold text-dark">${{ item.price }}</div>
+                                </ng-template>
+                            </td>
+                            <td><span class="fw-bold text-dark">{{ item.stockQuantity }}</span> <small class="text-muted">pcs</small></td>
+                            <td class="text-danger fw-bold">{{ item.expiryDate | date:'yyyy-MM-dd' }}</td>
+                            <td>
+                                <span class="badge-pill bg-success-subtle text-success" *ngIf="item.isActive">Active</span>
+                                <span class="badge-pill bg-danger-subtle text-danger" *ngIf="!item.isActive">Inactive</span>
+                            </td>
+                            <td class="text-center text-nowrap">
+                                <a [routerLink]="['/admin/products', item.productId]" class="btn btn-sm btn-outline-info rounded-circle me-1 border-0 shadow-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a [routerLink]="['/admin/products/edit', item.productId]" class="btn btn-sm btn-outline-primary rounded-circle me-1 border-0 shadow-sm">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form class="d-inline" (ngSubmit)="deleteProduct(item)">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle border-0 shadow-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
